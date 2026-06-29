@@ -12,7 +12,8 @@
 ### Administration Requirements
 
 1. Must be at least **Application Administration**, **Privileged Role Administrator**, and **User Administrator** while setting up the integration. If setup fails, you may need to switch to **Global Administrator** to ensure all necessary permissions are granted.
-2. Must be added to the **AdminAgents** grou&#x70;**.** This group is required for connection to the Microsoft Partner API.
+2. If you wish to manage your own tenant you can assign additional permissions as described here: [recommended-roles.md](../maintaining-cipp/recommended-roles.md "mention") and contine to the documention [here](owntenant.md).
+3. Must be added to the **AdminAgents** grou&#x70;**.** This group is required for connection to the Microsoft Partner API.
 
 ### Multi-factor Authentication
 
