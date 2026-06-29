@@ -360,6 +360,44 @@ if you want to use the ability to jump into portals using your own account, add 
 
 <details>
 
+<summary>My technicians get "no access", blank/half-loading portals, or repeated sign-in prompts when using the Portals links. What's wrong?</summary>
+
+This is one of the most common points of confusion for newly onboarded partners, and it almost always comes down to a single cause: **the technician's own account does not have GDAP access to the client tenant.**
+
+It's important to understand that there are **two different identities** at play in CIPP:
+
+* **The CIPP service account (CIPP-SAM).** This is what CIPP itself uses to read and manage tenants in the background. The onboarding wizard, the 15 [recommended-roles.md](../../setup/maintaining-cipp/recommended-roles.md "mention"), CPV refreshes, and the Permissions Check all relate to *this* account. If CIPP is displaying tenant data, this account is working.
+* **Your individual technician's account.** The **Portals Quick Access** links on the [dashboard](../../user-documentation/dashboard/README.md "mention") and the portal jump-ins on [tenant-select.md](../../user-documentation/shared-features/menu-bar/tenant-select.md "mention") leave CIPP entirely and open the Microsoft portal **as the signed-in technician** — not as the service account. For these to work, the technician's *own* account must have a GDAP path into that tenant.
+
+So if CIPP works but a technician can't use the portal links, refreshing CPV, re-running the Permissions Check, or confirming the 15 roles **will not help** — those only affect the service account.
+
+**Typical symptoms, all from the same cause:**
+
+| Symptom | What's happening |
+| --- | --- |
+| "No SharePoint admin access" | The technician's account isn't in the GDAP group mapped to the SharePoint Administrator role. |
+| M365 portal is blank / Entra portal never finishes loading (or loads the center but no left sidebar) | The portal opened under the technician's account, which has no delegated role in that tenant, so it can't render. |
+| Prompted to authenticate every time a portal is opened, even with other portal tabs already open | The technician's account has no standing delegated access to the tenant, so each portal forces a fresh delegated sign-in. |
+
+**The fix:** add the technician's account to the **M365 GDAP** security groups that CIPP generated in your partner tenant. Membership in these groups is what grants a user delegated access through your GDAP relationships.
+
+1. In your **partner tenant**, go to Entra (or the Microsoft 365 admin center) and locate the security groups named `M365 GDAP ...`.
+2. Add the technician's user account as a member of the relevant groups (add them to all of the role groups to mirror the access the service account has).
+3. Optionally you can nest groups under those roles such that you add staff to a group called `GDAP Technician Accounts` and add that group as a member of the `M365 GDAP ...` groups and then add the staff just to `GDAP Technician Accounts`, when new permissions are added just add the `GDAP Technician Accounts` group to the new `M365 GDAP ...` group and all staff in `GDAP Technician Accounts` with get the new permission
+4. Have the technician sign out of the Microsoft portals fully and sign back in so their token picks up the new group membership.
+
+{% hint style="warning" %}
+Adding a user to the M365 GDAP groups grants that user delegated access to **every** tenant onboarded with GDAP, not just one client. Only add accounts that should be able to administer all of your clients.
+{% endhint %}
+
+{% hint style="info" %}
+GDAP delegated access is also bounded by the roles in each relationship. If a role (for example SharePoint Administrator) was never part of the relationship for that client, no one — service account or technician — will have that access until a new relationship containing the role is established. See [recommended-roles.md](../../setup/maintaining-cipp/recommended-roles.md "mention") and the [gdap-management](../../user-documentation/tenant/gdap-management/ "mention") section. [Microsoft GDAP Documentation](https://learn.microsoft.com/en-us/partner-center/customers/gdap-introduction)
+{% endhint %}
+
+</details>
+
+<details>
+
 <summary>Applying New Standards to a Tenant</summary>
 
 **Q: How long does it typically take for new standards to be applied to a tenant?**
